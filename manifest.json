@@ -1,12 +1,13 @@
 {
   "name": "Calculadora de Horas Extras",
   "short_name": "Horas Extras",
-  "description": "App para calcular horas extras de forma simples e rápida",
+  "description": "App para calcular horas extras de forma simples e rápida.",
   "start_url": "./index.html",
+  "scope": "./",
   "display": "standalone",
+  "orientation": "portrait",
   "background_color": "#1e1e1e",
   "theme_color": "#007bff",
-  "orientation": "portrait",
   "icons": [
     {
       "src": "icon-192.png",
@@ -17,6 +18,12 @@
       "src": "icon-512.png",
       "sizes": "512x512",
       "type": "image/png"
+    },
+    {
+      "src": "icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
     }
   ]
 }
