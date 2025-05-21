@@ -1,10 +1,10 @@
 const CACHE_NAME = 'horas-extras-v1';
 const urlsToCache = [
-  './',
-  './index.html',
-  './manifest.json',
-  './icon-192.png',
-  './icon-512.png'
+  '/calculadora-horas-extras/',
+  '/calculadora-horas-extras/index.html',
+  '/calculadora-horas-extras/manifest.json',
+  '/calculadora-horas-extras/icon-manifest-192x192.png',
+  '/calculadora-horas-extras/icon-manifest-512x512.png'
 ];
 
 // Instala o Service Worker e faz cache dos arquivos essenciais
