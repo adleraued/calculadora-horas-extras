@@ -1,14 +1,13 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
-  <link rel="manifest" href="manifest.json">
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
   <title>Calculadora de Horas Extras</title>
+  <link rel="manifest" href="manifest.json">
+  <link rel="icon" href="icon-manifest-192x192.png">
   <style>
-    * {
-      box-sizing: border-box;
-    }
+    * { box-sizing: border-box; }
     body {
       font-family: Arial, sans-serif;
       margin: 0;
@@ -31,9 +30,7 @@
       margin-top: 10px;
       font-size: 16px;
     }
-    input[type="time"],
-    select,
-    button {
+    input[type="time"], select, button {
       width: 100%;
       padding: 10px;
       margin-top: 5px;
@@ -57,9 +54,7 @@
     button:active {
       background-color: #004080;
     }
-    h2, h3 {
-      text-align: center;
-    }
+    h2, h3 { text-align: center; }
     #historico {
       margin-top: 20px;
       max-height: 300px;
@@ -75,12 +70,8 @@
       margin-top: 10px;
     }
     @media (max-width: 600px) {
-      body {
-        padding: 10px;
-      }
-      .container {
-        padding: 15px;
-      }
+      body { padding: 10px; }
+      .container { padding: 15px; }
     }
   </style>
 </head>
@@ -191,17 +182,18 @@
       });
     }
 
-    // Executa ao carregar a página
-    window.onload = function() {
-      mostrarHistorico();
+    window.onload = mostrarHistorico;
+  </script>
 
-      if ('serviceWorker' in navigator) {
+  <script>
+    if ('serviceWorker' in navigator) {
+      window.addEventListener('load', () => {
         navigator.serviceWorker
           .register('./service-worker.js')
           .then(() => console.log('✅ Service Worker registrado com sucesso!'))
           .catch((error) => console.error('❌ Falha ao registrar SW:', error));
-      }
-    };
+      });
+    }
   </script>
 </body>
 </html>
