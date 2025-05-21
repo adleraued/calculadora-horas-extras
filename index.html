@@ -1,0 +1,196 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+  <title>Calculadora de Horas Extras</title>
+  <style>
+    * {
+      box-sizing: border-box;
+    }
+    body {
+      font-family: Arial, sans-serif;
+      margin: 0;
+      padding: 20px;
+      background-color: #1e1e1e;
+      color: #eee;
+      touch-action: manipulation;
+      -webkit-tap-highlight-color: transparent;
+    }
+    .container {
+      background: #2c2c2c;
+      padding: 20px;
+      max-width: 600px;
+      margin: auto;
+      border-radius: 10px;
+      box-shadow: 0 0 15px rgba(0, 0, 0, 0.5);
+    }
+    label {
+      display: block;
+      margin-top: 10px;
+      font-size: 16px;
+    }
+    input[type="time"],
+    select,
+    button {
+      width: 100%;
+      padding: 10px;
+      margin-top: 5px;
+      font-size: 16px;
+      border-radius: 5px;
+      border: 1px solid #555;
+      background-color: #444;
+      color: #fff;
+    }
+    button {
+      margin-top: 15px;
+      cursor: pointer;
+      background-color: #007bff;
+      color: white;
+      border: none;
+      transition: background-color 0.2s;
+    }
+    button:hover {
+      background-color: #0056b3;
+    }
+    button:active {
+      background-color: #004080;
+    }
+    h2, h3 {
+      text-align: center;
+    }
+    #historico {
+      margin-top: 20px;
+      max-height: 300px;
+      overflow-y: auto;
+      background-color: #333;
+      padding: 10px;
+      border-radius: 5px;
+      font-size: 1.1em;
+    }
+    #resultadoHoras, #resultadoExtras {
+      font-size: 1.2em;
+      text-align: center;
+      margin-top: 10px;
+    }
+    @media (max-width: 600px) {
+      body {
+        padding: 10px;
+      }
+      .container {
+        padding: 15px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h2>Calculadora de Horas Extras</h2>
+
+    <label>Jornada de Trabalho:</label>
+    <select id="jornadaSelecionada">
+      <option value="540" selected>1 - 9h00</option>
+      <option value="480">2 - 8h00</option>
+      <option value="528">3 - 8h48</option>
+    </select>
+
+    <label>Entrada da Manhã:</label>
+    <input type="time" id="entradaManha">
+    
+    <label>Saída para Almoço:</label>
+    <input type="time" id="saidaAlmoco">
+    
+    <label>Retorno do Almoço:</label>
+    <input type="time" id="retornoAlmoco">
+    
+    <label>Saída do Trabalho:</label>
+    <input type="time" id="saidaFinal">
+
+    <button onclick="calcularHoras()">Calcular</button>
+    <button onclick="limparCampos()">Limpar Campos</button>
+
+    <h3>Resultado:</h3>
+    <p id="resultadoHoras"></p>
+    <p id="resultadoExtras"></p>
+
+    <h3>Histórico dos Últimos Cálculos:</h3>
+    <div id="historico"></div>
+  </div>
+
+  <script>
+    function horaParaMinutos(horaStr) {
+      const [h, m] = horaStr.split(':').map(Number);
+      return h * 60 + m;
+    }
+
+    function minutosParaHoraStr(min) {
+      return `${Math.floor(min / 60)}h${String(min % 60).padStart(2, '0')}min`;
+    }
+
+    function calcularHoras() {
+      const entradaManha = document.getElementById('entradaManha').value;
+      const saidaAlmoco = document.getElementById('saidaAlmoco').value;
+      const retornoAlmoco = document.getElementById('retornoAlmoco').value;
+      const saidaFinal = document.getElementById('saidaFinal').value;
+      const jornadaSelecionada = parseInt(document.getElementById('jornadaSelecionada').value);
+
+      if (!(entradaManha && saidaAlmoco && retornoAlmoco && saidaFinal)) {
+        alert("Preencha todos os campos!");
+        return;
+      }
+
+      const manha = horaParaMinutos(saidaAlmoco) - horaParaMinutos(entradaManha);
+      const tarde = horaParaMinutos(saidaFinal) - horaParaMinutos(retornoAlmoco);
+      const totalMinutos = manha + tarde;
+
+      const horasTrabalhadas = minutosParaHoraStr(totalMinutos);
+      const diferenca = totalMinutos - jornadaSelecionada;
+      const horasExtras = minutosParaHoraStr(Math.abs(diferenca));
+      const resultado =
+        diferenca >= 0
+          ? `Horas Extras: +${horasExtras}`
+          : `Déficit de Horas: -${horasExtras}`;
+
+      document.getElementById('resultadoHoras').innerText = `Horas Trabalhadas: ${horasTrabalhadas}`;
+      document.getElementById('resultadoExtras').innerText = resultado;
+
+      salvarNoHistorico(entradaManha, saidaAlmoco, retornoAlmoco, saidaFinal, horasTrabalhadas, resultado);
+      mostrarHistorico();
+    }
+
+    function limparCampos() {
+      document.getElementById('entradaManha').value = '';
+      document.getElementById('saidaAlmoco').value = '';
+      document.getElementById('retornoAlmoco').value = '';
+      document.getElementById('saidaFinal').value = '';
+      document.getElementById('resultadoHoras').innerText = '';
+      document.getElementById('resultadoExtras').innerText = '';
+    }
+
+    function salvarNoHistorico(e1, e2, e3, e4, horas, extra) {
+      const historico = JSON.parse(localStorage.getItem('historicoHoras') || '[]');
+      historico.unshift({
+        data: new Date().toLocaleString(),
+        entrada: `${e1} - ${e2} / ${e3} - ${e4}`,
+        trabalhado: horas,
+        extra: extra
+      });
+      if (historico.length > 30) historico.pop();
+      localStorage.setItem('historicoHoras', JSON.stringify(historico));
+    }
+
+    function mostrarHistorico() {
+      const historico = JSON.parse(localStorage.getItem('historicoHoras') || '[]');
+      const div = document.getElementById('historico');
+      div.innerHTML = '';
+      historico.forEach(item => {
+        const p = document.createElement('p');
+        p.innerHTML = `<strong>${item.data}</strong><br>Horário: ${item.entrada}<br>${item.trabalhado} | ${item.extra}<hr>`;
+        div.appendChild(p);
+      });
+    }
+
+    window.onload = mostrarHistorico;
+  </script>
+</body>
+</html>
