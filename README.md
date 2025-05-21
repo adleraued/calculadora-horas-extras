@@ -17,3 +17,4 @@ Abra o `index.html` em qualquer navegador. Pode ser usada offline no celular ou 
 ---
 
 Feito com ☕, JS e força de vontade.
+feat: adiciona suporte PWA com manifest e service worker
